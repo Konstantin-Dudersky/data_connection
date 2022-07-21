@@ -13,7 +13,8 @@ from enum import IntEnum
 from logging import Handler, handlers
 
 from .settings import settings
-from .telegram import TelegramHandler, bot
+
+# from .telegram import TelegramHandler, bot
 
 FORMAT = (
     "%(levelname)s: %(asctime)s | "
@@ -119,8 +120,8 @@ if settings.debug:
     stream_handler.setFormatter(StreamFormatter())
     _handlers.append(stream_handler)
 # логгирование в telegram
-telegram_handler = TelegramHandler(bot)
-_handlers.append(telegram_handler)
+# telegram_handler = TelegramHandler(bot)
+# _handlers.append(telegram_handler)
 
 logging.basicConfig(
     format=FORMAT,
