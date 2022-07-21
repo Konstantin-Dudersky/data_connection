@@ -1,0 +1,79 @@
+[tool.poetry]
+authors = ["Konstantin-Dudersky <Konstantin.Dudersky@gmail.com>"]
+description = ""
+name = "template_fastapi"
+version = "0.1.0"
+
+[tool.poetry.dependencies]
+asyncua = "0.9.94"
+fastapi = "0.78.0"
+poethepoet = "*"
+python = "3.10.*"
+python-dotenv = "0.20.0"
+python-telegram-bot-raw = "20.0a1"
+sqlalchemy = "1.4.39"
+uvicorn = "0.18.2"
+
+[tool.poetry.dev-dependencies]
+black = "*"
+darglint = "*"
+flake8 = "*"
+flake8-annotations = "*"
+flake8-broken-line = "*"
+flake8-class-attributes-order = "*"
+flake8-commas = "*"
+flake8-docstrings = "*"
+flake8-import-order = "*"
+flake8-multiline-containers = "*"
+flake8-print = "*"
+flake8-return = "*"
+flake8-variables-names = "*"
+mypy = "*"
+pep8-naming = "*"
+pylint = "*"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+
+[tool.black]
+line-length = 79
+
+[tool.poe.tasks]
+create_env = {script = "src.utils.settings:create_env"}
+lint = ["lint_flake8", "lint_mypy", "lint_pyright"]
+lint_flake8 = {shell = 'flake8 src/'}
+lint_mypy = {shell = 'mypy src/'}
+lint_pyright = {shell = 'pyright'}# npm install --global pyright
+main = {script = "src.main:entry"}
+
+[tool.pylint.BASIC]
+good-names = 'db'
+
+[tool.pylint.'MESSAGES CONTROL']
+extension-pkg-whitelist = "pydantic"
+
+# настройки mypy с сайта pydantic
+[tool.mypy]
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_untyped_defs = true
+follow_imports = "silent"
+no_implicit_reexport = true
+plugins = [
+  "pydantic.mypy",
+]
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true
+
+[tool.pyright]
+include = ["src"]
+pythonPlatform = "Linux"
+pythonVersion = "3.10"
+typeCheckingMode = "strict"

@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        // запустить chromium командой:
+        // chromium --remote-debugging-port=9222
+        {
+            "name": "Attach to Chrome",
+            "port": 9222,
+            "request": "attach",
+            "type": "chrome",
+            "preLaunchTask": "npm: start",
+            "webRoot": "${workspaceFolder}"
+        },
+    ]
+}
