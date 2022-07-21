@@ -1,39 +1,43 @@
+"""Test."""
+
 import asyncio
+from asyncio import sleep as asleep
 from typing import Any, Coroutine, NamedTuple
 
+from data_connector import AccessEnum, ChannelOpcUa, DpSignal, DriverOpcUa
 from data_connector.utils.logger import LoggerLevel, get_logger
-from data_connector.utils.settings import settings
-from data_connector.datapoint import DatapointSignal
-from data_connector.channel import OpcUaItem, OpcUaChannel
-from data_connector.signals import AccessEnum
 
 atasks: list[Coroutine[Any, Any, None]] = []
 log = get_logger(__name__, LoggerLevel.DEBUG)
 get_logger("asyncua").setLevel(level=LoggerLevel.WARNING)
 
 
-opcua = OpcUaChannel(
-    url=settings.plc_url,
-    atasks=atasks,
+opcua: DriverOpcUa = DriverOpcUa(
+    url="opc.tcp://10.101.80.220:4840",
 )
+atasks.append(opcua.task())
 
 
 class Data(NamedTuple):
-    test_bool: DatapointSignal[bool] = DatapointSignal[bool](
+    """Data."""
+
+    test_bool_ws: DpSignal[bool] = DpSignal[bool](
         False,
-        channels=[
+        channels=(
             opcua.add(
-                OpcUaItem[bool]("node_id", access=AccessEnum.READWRITE),
+                ChannelOpcUa[bool]("ns=4;i=2", access=AccessEnum.WRITEONLY),
             ),
-        ],
+        ),
     )
 
 
 data: Data = Data()
-opcua.init_channel_items()
 
-for dp in data:
-    print(dp)
+
+async def _run() -> None:
+    while True:
+        data.test_bool_ws.value = not data.test_bool_ws.value
+        await asleep(2)
 
 
 async def run() -> None:
@@ -41,6 +45,7 @@ async def run() -> None:
     done, _ = await asyncio.wait(
         [
             *[asyncio.create_task(t) for t in atasks],
+            asyncio.create_task(_run()),
         ],
         return_when=asyncio.FIRST_EXCEPTION,
     )

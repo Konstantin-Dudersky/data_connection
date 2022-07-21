@@ -12,9 +12,6 @@ import socket
 from enum import IntEnum
 from logging import Handler, handlers
 
-from .settings import settings
-
-# from .telegram import TelegramHandler, bot
 
 FORMAT = (
     "%(levelname)s: %(asctime)s | "
@@ -115,10 +112,9 @@ file_handler = handlers.RotatingFileHandler(
 file_handler.setFormatter(FileFormatter())
 _handlers.append(file_handler)
 # логгирование в консоль
-if settings.debug:
-    stream_handler = logging.StreamHandler()
-    stream_handler.setFormatter(StreamFormatter())
-    _handlers.append(stream_handler)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(StreamFormatter())
+_handlers.append(stream_handler)
 # логгирование в telegram
 # telegram_handler = TelegramHandler(bot)
 # _handlers.append(telegram_handler)

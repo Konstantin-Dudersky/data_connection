@@ -6,12 +6,7 @@ version = "0.1.0"
 
 [tool.poetry.dependencies]
 asyncua = "0.9.94"
-fastapi = "0.79.0"
-poethepoet = "*"
 python = "3.10.*"
-python-dotenv = "0.20.0"
-sqlalchemy = "1.4.39"
-uvicorn = "0.18.2"
 
 [tool.poetry.dev-dependencies]
 black = "*"
@@ -28,6 +23,7 @@ flake8-print = "*"
 flake8-return = "*"
 flake8-variables-names = "*"
 pep8-naming = "*"
+poethepoet = "*"
 pylint = "*"
 
 [build-system]
@@ -39,9 +35,8 @@ line-length = 79
 
 [tool.poe.tasks]
 create_env = {script = "data_connector.utils.settings:create_env"}
-lint = ["lint_flake8", "lint_mypy", "lint_pyright"]
-lint_flake8 = {shell = 'flake8 src/'}
-lint_mypy = {shell = 'mypy src/'}
+lint = ["lint_flake8", "lint_pyright"]
+lint_flake8 = {shell = 'flake8 data_connector/'}
 lint_pyright = {shell = 'pyright'}# npm install --global pyright
 main = {script = "src.main:entry"}
 

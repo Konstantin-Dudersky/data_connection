@@ -20,20 +20,20 @@ class AccessEnum(Enum):
     READWRITE = auto()
 
 
-SignalType = TypeVar("SignalType", bool, int, str, None)
+Signaltype = TypeVar("Signaltype", bool, int, str, None)
 
 
-class Signal(Generic[SignalType]):
+class Signal(Generic[Signaltype]):
     """Базовый класс для сигналов."""
 
     __id: int
     __read_ts: int
-    __value: SignalType
+    __value: Signaltype
     __write_ts: int
 
     def __init__(
         self: Self,
-        default: SignalType,
+        default: Signaltype,
         debug: bool = False,
     ) -> None:
         """Базовый класс для сигналов.
@@ -65,7 +65,7 @@ class Signal(Generic[SignalType]):
         return self.__write_ts
 
     @property
-    def value(self: Self) -> SignalType:
+    def value(self: Self) -> Signaltype:
         """Возвращает значение.
 
         :return: значение
@@ -80,12 +80,12 @@ class Signal(Generic[SignalType]):
         return self.__value
 
     @value.setter
-    def value(self: Self, value: SignalType) -> None:
+    def value(self: Self, value: Signaltype) -> None:
         """Устанавливает значение.
 
         :param value: новое значение
         """
-        self.__value: SignalType = value
+        self.__value: Signaltype = value
         self.__write_ts = perf_counter_ns()
         log.debug(
             "%s, write, value: %s, write_ts: %s",

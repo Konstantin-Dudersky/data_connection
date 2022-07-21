@@ -1,21 +1,45 @@
+"""Datapoint."""
+
 from typing import Generic
+
 from typing_extensions import Self
 
-from .signals import SignalType, Signal
-from .channel import ChannelItem
+from .channel import Channel
+from .signal import Signal, Signaltype
 
 
-class DatapointSignal(Generic[SignalType]):
-    sig: Signal[SignalType]
-    __channels: list[ChannelItem[SignalType]] | None
+class DpSignal(Generic[Signaltype]):
+    """Простой datapoint, содержащий только signal."""
+
+    __signal: Signal[Signaltype]
 
     def __init__(
         self: Self,
-        default: SignalType,
-        channels: list[ChannelItem[SignalType]] | None = None,
+        default: Signaltype,
+        channels: tuple[Channel[Signaltype]] | None = None,
     ) -> None:
-        self.sig = Signal[SignalType](default=default)
-        self.__channels = channels
+        """Простой datapoint, содержащий только signal.
+
+        :param default: начальное значение
+        :param channels: список связанных объектов channel
+        """
+        self.__signal = Signal[Signaltype](default=default)
         if channels is not None:
-            for ch in channels:
-                ch.set_signal_link(self.sig)
+            for channel in channels:
+                channel.set_signal_link(self.__signal)
+
+    @property
+    def value(self: Self) -> Signaltype:
+        """Возвращает значение.
+
+        :return: значение
+        """
+        return self.__signal.value
+
+    @value.setter
+    def value(self: Self, value: Signaltype) -> None:
+        """Устанавливает значение.
+
+        :param value: новое значение
+        """
+        self.__signal.value = value
