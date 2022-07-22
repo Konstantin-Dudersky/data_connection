@@ -23,6 +23,7 @@ from .utils.logger import LoggerLevel, get_logger
 
 
 log = get_logger(__name__, LoggerLevel.INFO)
+get_logger("asyncua").setLevel(level=LoggerLevel.WARNING)
 
 
 class ChannelOpcUa(Channel[Signaltype]):
