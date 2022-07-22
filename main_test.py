@@ -4,15 +4,20 @@ import asyncio
 from asyncio import sleep as asleep
 from typing import Any, Coroutine, NamedTuple
 
-from data_connector import AccessEnum, ChannelOpcUa, DpSignal, DriverOpcUa
-from data_connector.utils.logger import LoggerLevel, get_logger
+from datapoints import (
+    AccessEnum,
+    ChannelOpcUa,
+    DpSignal,
+    DriverOpcUaClient,
+)
+from datapoints.utils.logger import LoggerLevel, get_logger
 
 atasks: list[Coroutine[Any, Any, None]] = []
 log = get_logger(__name__, LoggerLevel.DEBUG)
 get_logger("asyncua").setLevel(level=LoggerLevel.WARNING)
 
 
-opcua: DriverOpcUa = DriverOpcUa(
+opcua: DriverOpcUaClient = DriverOpcUaClient(
     url="opc.tcp://10.101.80.220:4840",
 )
 atasks.append(opcua.task())

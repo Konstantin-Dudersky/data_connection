@@ -95,12 +95,13 @@ class ChannelOpcUa(Channel[Signaltype]):
         return await asleep(0, True)
 
 
-class DriverOpcUa:
+class DriverOpcUaClient:
     """Driver for OPC UA client."""
 
     __url: str
     __client: Client
     __ready: bool = True
+    __ready_channel: Channel[bool] = Channel[bool](access=AccessEnum.READONLY)
     __debug_perf: bool
     __items: list[ChannelOpcUa[Any]] = []
 
@@ -128,6 +129,10 @@ class DriverOpcUa:
         :return: True - plc готов
         """
         return self.__ready
+
+    @property
+    def ready_channel(self: Self) -> ChannelOpcUa[Any]:
+        return self.__ready_channel
 
     def add(
         self: Self,

@@ -17,3 +17,9 @@
 ```sh
 poetry install
 ```
+
+Опубликовать пакет
+
+```sh
+poetry build && poetry publish
+```
