@@ -1,0 +1,133 @@
+{
+  "main": {
+    "id": "499dc991de0c23a2",
+    "type": "split",
+    "children": [
+      {
+        "id": "0d7b22db2b4353c2",
+        "type": "leaf",
+        "state": {
+          "type": "kanban",
+          "state": {
+            "file": "todo.md"
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "d7f46b2118c21e61",
+    "type": "split",
+    "children": [
+      {
+        "id": "a3a439ae5c512702",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0788e9b77d5a2b23",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "ccbcb60975c85fee",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "8895cb2f86efb4f8",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "5e75d71b1192c5ad",
+    "type": "split",
+    "children": [
+      {
+        "id": "f604f26300a21e2b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e9b0bba78a67252f",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "todo.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "4f8040285051e69e",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "todo.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "194d2cbbc75d0600",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "bbc0a6e2bcb93410",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "todo.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "0788e9b77d5a2b23",
+  "lastOpenFiles": [
+    "Untitled.md"
+  ]
+}
