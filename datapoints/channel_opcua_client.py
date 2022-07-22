@@ -17,6 +17,7 @@ from typing_extensions import Self
 
 
 from .channel import Channel
+from .channel_virtual import ChannelVirt
 from .signal import AccessEnum, Signaltype
 from .utils.logger import LoggerLevel, get_logger
 
@@ -101,7 +102,9 @@ class DriverOpcUaClient:
     __url: str
     __client: Client
     __ready: bool = True
-    __ready_channel: Channel[bool] = Channel[bool](access=AccessEnum.READONLY)
+    __ready_channel: ChannelVirt[bool] = ChannelVirt[bool](
+        access=AccessEnum.READONLY,
+    )
     __debug_perf: bool
     __items: list[ChannelOpcUa[Any]] = []
 
@@ -131,7 +134,13 @@ class DriverOpcUaClient:
         return self.__ready
 
     @property
-    def ready_channel(self: Self) -> ChannelOpcUa[Any]:
+    def ready_channel(self: Self) -> ChannelVirt[bool]:
+        """Канал, через который можно получать значения о готовности драйвера.
+
+        READONLY
+
+        :return: канал о готовности драйвера
+        """
         return self.__ready_channel
 
     def add(
@@ -167,10 +176,12 @@ class DriverOpcUaClient:
                 if self.__ready:
                     log.exception("opc ua connection error: %s", exc)
             self.__ready = False
+            self.__ready_channel.value = self.__ready
             await asleep(5)
 
     async def __task(self: Self) -> None:
         begin_time: int = perf_counter_ns()
+        self.__ready_channel.value = self.__ready
         for item in self.__items:
             await item.write()
         for item in self.__items:

@@ -4,7 +4,7 @@ description = "Управление данными"
 name = "datapoints"
 readme = "README.md"
 repository = "https://github.com/Konstantin-Dudersky/data_connector"
-version = "0.0.1"
+version = "0.0.2"
 
 [tool.poetry.dependencies]
 asyncua = "0.9.94"
@@ -36,9 +36,8 @@ requires = ["poetry-core>=1.0.0"]
 line-length = 79
 
 [tool.poe.tasks]
-create_env = {script = "data_connector.utils.settings:create_env"}
 lint = ["lint_flake8", "lint_pyright"]
-lint_flake8 = {shell = 'flake8 data_connector/'}
+lint_flake8 = {shell = 'flake8 datapoints/'}
 lint_pyright = {shell = 'pyright'}# npm install --global pyright
 main = {script = "src.main:entry"}
 
@@ -49,7 +48,7 @@ good-names = 'db'
 extension-pkg-whitelist = "pydantic"
 
 [tool.pyright]
-include = ["data_connector"]
+include = ["datapoints"]
 pythonPlatform = "Linux"
 pythonVersion = "3.10"
 typeCheckingMode = "strict"

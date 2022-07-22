@@ -26,13 +26,17 @@ atasks.append(opcua.task())
 class Data(NamedTuple):
     """Data."""
 
-    test_bool_ws: DpSignal[bool] = DpSignal[bool](
+    test_bool_rw: DpSignal[bool] = DpSignal[bool](
         False,
         channels=(
             opcua.add(
                 ChannelOpcUa[bool]("ns=4;i=2", access=AccessEnum.WRITEONLY),
             ),
         ),
+    )
+    opcua_ready: DpSignal[bool] = DpSignal[bool](
+        default=bool(),
+        channels=(opcua.ready_channel,),
     )
 
 
@@ -41,7 +45,8 @@ data: Data = Data()
 
 async def _run() -> None:
     while True:
-        data.test_bool_ws.value = not data.test_bool_ws.value
+        data.test_bool_rw.value = not data.test_bool_rw.value
+        print(data.opcua_ready.value)
         await asleep(2)
 
 
