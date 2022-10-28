@@ -1,5 +1,0 @@
-[flake8]
-docstring_style=sphinx
-per-file-ignores =
-    src/db/crud.py:E712
-max-line-length=80

@@ -1,0 +1,17 @@
+{
+  "folders": [
+    {
+      "name": "(root)",
+      "path": "."
+    },
+    {
+      "path": "data_exchange"
+    },
+    {
+      "path": "test_reader_side"
+    },
+    {
+      "path": "test_writer_side"
+    }
+  ]
+}

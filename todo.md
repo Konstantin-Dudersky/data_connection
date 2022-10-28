@@ -1,0 +1,4 @@
+- todo
+- doing
+	- ws endpoint
+- test

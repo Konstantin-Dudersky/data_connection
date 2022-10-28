@@ -1,0 +1,24 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+name = "test-writer-side"
+version = "0.1.0"
+description = ""
+authors = ["Konstantin-Dudersky <Konstantin.Dudersky@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "test_writer_side" }]
+
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+data_exchange = { path = "../data_exchange", develop = true }
+test_reader_side = { path = "../test_reader_side", develop = true }
+
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+wemake-python-styleguide = "0.17.0"

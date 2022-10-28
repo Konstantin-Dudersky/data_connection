@@ -1,0 +1,36 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+name = "test-reader-side"
+version = "0.0.1"
+description = ""
+authors = ["Konstantin-Dudersky <Konstantin.Dudersky@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "test_reader_side" }]
+
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+# fastapi = "*"
+uvicorn = "*"
+
+data_exchange = { path = "../data_exchange", develop = true }
+
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+wemake-python-styleguide = "0.17.0"
+
+[tool.poetry.scripts]
+start = 'test_reader_side.main:main'
+
+
+[tool.pyright]
+pythonPlatform = "Linux"
+pythonVersion = "3.10"
+stubPath = '.venv/typings'
+typeCheckingMode = "strict"

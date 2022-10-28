@@ -1,0 +1,44 @@
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+
+
+[tool.black]
+line-length = 79
+
+
+[tool.poetry]
+authors = ["konstantin-dudersky <konstantin.dudersky@gmail.com>"]
+description = "Передача данных между сервисами"
+name = "data_exchange"
+readme = "README.md"
+repository = "https://github.com/konstantin-dudersky/data_connector"
+version = "0.0.3"
+
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+fastapi = "0.*"
+pydantic = "1.*"
+websockets = "10.*"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+wemake-python-styleguide = "0.17.0"
+poethepoet = "*"
+
+
+[tool.poe.tasks]
+lint = ["lint_flake8", "lint_pyright"]
+lint_flake8 = { shell = 'flake8 datapoints/' }
+lint_pyright = { shell = 'pyright' }           # npm install --global pyright
+main = { script = "src.main:entry" }
+
+
+[tool.pyright]
+pythonPlatform = "Linux"
+pythonVersion = "3.10"
+stubPath = '.venv/typings'
+typeCheckingMode = "strict"
