@@ -17,6 +17,7 @@ ignore =
     WPS348, # Found a line that starts with a dot
     WPS410, # Found wrong metadata variable: __all__
     WPS412, # Found `__init__.py` module with logic
+    W503, # line break before binary operatorflake8
 inline-quotes = double
 max-arguments = 10
 max-complexity = 10
@@ -24,4 +25,5 @@ max-line-length = 80
 multi-line-output-modes = 3
 nested-classes-whitelist = Config
 per-file-ignores =
-    # */settings.py:E501,
+    datapoint.py:WPS601,
+    datapoint.py:WPS110,

@@ -15,6 +15,8 @@ packages = [{ include = "test_writer_side" }]
 [tool.poetry.dependencies]
 python = "^3.11"
 
+debugpy = "*"
+
 data_exchange = { path = "../data_exchange", develop = true }
 test_reader_side = { path = "../test_reader_side", develop = true }
 
@@ -22,3 +24,14 @@ test_reader_side = { path = "../test_reader_side", develop = true }
 [tool.poetry.group.dev.dependencies]
 black = "*"
 wemake-python-styleguide = "0.17.0"
+
+
+[tool.poetry.scripts]
+start = "test_writer_side.main:main"
+
+
+[tool.pyright]
+pythonPlatform = "Linux"
+pythonVersion = "3.11"
+stubPath = '.venv/typings'
+typeCheckingMode = "strict"

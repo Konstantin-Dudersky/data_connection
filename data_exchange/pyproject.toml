@@ -39,6 +39,6 @@ main = { script = "src.main:entry" }
 
 [tool.pyright]
 pythonPlatform = "Linux"
-pythonVersion = "3.10"
+pythonVersion = "3.11"
 stubPath = '.venv/typings'
 typeCheckingMode = "strict"

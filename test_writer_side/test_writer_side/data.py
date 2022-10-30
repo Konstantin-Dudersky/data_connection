@@ -6,7 +6,8 @@ data = DataModel.construct()
 
 writer_side = WriterSide(
     model=data,
-    other_host="localhost",
-    other_port=8010,
-    other_endpoint="ws",
+    reader_side_host="localhost",
+    reader_side_port=8010,
+    reader_side_endpoint="/ws",
+    writer_priority_delay=10.0,
 )

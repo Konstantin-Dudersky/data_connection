@@ -15,7 +15,6 @@ packages = [{ include = "test_reader_side" }]
 [tool.poetry.dependencies]
 python = "^3.11"
 
-# fastapi = "*"
 uvicorn = "*"
 
 data_exchange = { path = "../data_exchange", develop = true }
@@ -25,12 +24,13 @@ data_exchange = { path = "../data_exchange", develop = true }
 black = "*"
 wemake-python-styleguide = "0.17.0"
 
+
 [tool.poetry.scripts]
 start = 'test_reader_side.main:main'
 
 
 [tool.pyright]
 pythonPlatform = "Linux"
-pythonVersion = "3.10"
+pythonVersion = "3.11"
 stubPath = '.venv/typings'
 typeCheckingMode = "strict"

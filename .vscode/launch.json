@@ -1,12 +1,4 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "FastAPI",
-            "type": "python",
-            "request": "launch",
-            "module": "main_test",
-            "cwd": "${workspaceFolder}"
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": []
 }
