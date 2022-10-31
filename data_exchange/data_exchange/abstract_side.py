@@ -1,27 +1,34 @@
 """Абстрактный класс для передачи данных."""
 
+# pyright: reportUnusedFunction=false
+
 import asyncio
 import ipaddress
 import logging
-from typing import Final
+from time import perf_counter_ns
+from typing import Any, Final, Generic, TypeVar
 
-from fastapi import WebSocket
+from fastapi import FastAPI, WebSocket
 from pydantic import BaseModel
 from websockets.exceptions import ConnectionClosed, ConnectionClosedOK
 from websockets.legacy import client
 
+from .datapoint import Datapoint
+
 log: logging.Logger = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
+NS_IN_S: Final[float] = 1e9
 URL: Final[str] = "ws://{host}:{port}{endpoint}"
+TBaseModel = TypeVar("TBaseModel", bound=BaseModel)  # noqa: WPS111
 
 
-class AbstractSide(object):
+class AbstractSide(Generic[TBaseModel]):  # noqa: WPS214
     """Абстрактный класс для передачи данных."""
 
-    __data_ext: BaseModel
-    __data_int: BaseModel
-    __model: BaseModel
+    __data_ext: TBaseModel
+    __data_int: TBaseModel
+    __model: TBaseModel
     __send_interval: float
     __other_host: ipaddress.IPv4Address
     __other_port: int
@@ -29,7 +36,7 @@ class AbstractSide(object):
 
     def __init__(
         self,
-        model: BaseModel,
+        model: TBaseModel,
         other_host: ipaddress.IPv4Address,
         other_port: int,
         other_endpoint: str,
@@ -39,20 +46,66 @@ class AbstractSide(object):
 
         Parameters
         ----------
-        model: BaseModel
+        model: TBaseModel
             модель данных pydantic
+        other_host: ipaddress.IPv4Address
+            Адрес компонента с запущенным websocket-сервером
+        other_port: int
+            Порт компонента с запущенным websocket-сервером
+        other_endpoint: str
+            URL компонента с запущенным websocket-сервером
         send_interval: float
-            задержка между рассылкой сообщений
+            Задержка между рассылкой сообщений
         """
-        self.__data_ext = model
-        self.__data_int = model.construct()
+        self.__model: TBaseModel = model
         self.__other_host = other_host
         self.__other_port = other_port
         self.__other_endpoint = other_endpoint
         self.__send_interval = send_interval
-        self.__model = model
+        self.__data_ext = self.__model.construct()
+        self.__data_int = self.__model.construct()
 
-    async def ws_server(self, websocket: WebSocket) -> None:
+    @property
+    def data(self) -> TBaseModel:  # noqa: WPS110
+        """Данные.
+
+        Returns
+        -------
+        Данные
+        """
+        return self.__data_ext
+
+    def configure_fastapi(
+        self,
+        api: FastAPI,
+        endpoint_status: str = "/data/status",
+        endpoint_ws: str = "/data/ws",
+    ) -> None:
+        """Сконфигурировать FastAPI.
+
+        Parameters
+        ----------
+        api: FastAPI
+            Приложение FastAPI
+        endpoint_status: str
+            Адрес для доступа к состоянию данных
+        endpoint_ws: str
+            Адрес для подключения протокола websocket
+        """
+
+        @api.get(endpoint_status)
+        def status() -> TBaseModel:
+            return self.data
+
+        @api.websocket(endpoint_ws)
+        async def ws(websocket: WebSocket) -> None:
+            await self._ws_server(websocket)
+
+    async def task(self) -> None:
+        """Асинхронная задача для добавления в группу задач."""
+        await self._ws_client()
+
+    async def _ws_server(self, websocket: WebSocket) -> None:
         """Рассылка данных через WebSocket.
 
         Функция вызывается в FastAPI endpoint
@@ -65,14 +118,15 @@ class AbstractSide(object):
         await websocket.accept()
         log.info("connection open with client: {0}".format(websocket.client))
         while True:  # noqa: WPS457
-            data_rcv: BaseModel = self.__model.construct()
+            begin: int = perf_counter_ns()
+            data_xch: TBaseModel = self.__model.construct()
             self._prepare_send(
-                data_rcv,
-                self.__data_ext,
-                self.__data_int,
+                data_xch=data_xch,
+                data_int=self.__data_int,
+                data_ext=self.__data_ext,
             )
             try:
-                await websocket.send_text(data_rcv.json(by_alias=True))
+                await websocket.send_text(data_xch.json(by_alias=True))
             except ConnectionClosedOK:
                 log.info(
                     "connection closed from client: {0}".format(
@@ -80,9 +134,11 @@ class AbstractSide(object):
                     ),
                 )
                 break
-            await asyncio.sleep(self.__send_interval)
+            end: int = perf_counter_ns()
+            await asyncio.sleep(self.__send_interval - (end - begin) / NS_IN_S)
 
-    async def ws_client(self) -> None:
+    async def _ws_client(self) -> None:
+        """Получение данных через WebSocket."""
         url: str = URL.format(
             host=self.__other_host,
             port=self.__other_port,
@@ -94,31 +150,30 @@ class AbstractSide(object):
             try:
                 async for message in websocket:
                     log.debug("recieved message: {0}".format(message))
-                    msg_model = self.__model.parse_raw(message)
+                    msg_model: TBaseModel = self.__model.parse_raw(message)
                     self._prepare_rcv(
-                        data_rcv=msg_model,
+                        data_xch=msg_model,
                         data_int=self.__data_int,
                         data_ext=self.__data_ext,
                     )
             except ConnectionClosed:
                 await asyncio.sleep(1)
 
-    async def task(self) -> None:
-        """Асинхронная задача для добавления в группу задач."""
-        await self.ws_client()
-
     def _prepare_send(
         self,
-        data_xch: BaseModel,
-        data_ext: BaseModel,
-        data_int: BaseModel,
+        data_xch: TBaseModel,
+        data_int: TBaseModel,
+        data_ext: TBaseModel,
     ) -> None:
         raise NotImplementedError
 
     def _prepare_rcv(
         self,
-        data_rcv: BaseModel,
-        data_int: BaseModel,
-        data_ext: BaseModel,
+        data_xch: TBaseModel,
+        data_int: TBaseModel,
+        data_ext: TBaseModel,
     ) -> None:
         raise NotImplementedError
+
+    def _is_datapoint(self, field: Any) -> bool:
+        return isinstance(field, Datapoint)

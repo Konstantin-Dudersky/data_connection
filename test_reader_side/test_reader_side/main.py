@@ -2,7 +2,7 @@ import asyncio
 import logging
 
 from .api import server_task
-from .data import reader_side, data
+from .data import reader_side
 from .logger import logger_init
 
 logger_init("test_reader_side")
@@ -15,7 +15,7 @@ async def counter() -> None:
     counter: int = 0
     while True:
         counter += 1
-        data.test_dp1.value = counter
+        reader_side.data.test_dp1.value = counter
         await asyncio.sleep(2)
 
 

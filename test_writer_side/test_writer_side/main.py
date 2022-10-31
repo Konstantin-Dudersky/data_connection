@@ -3,7 +3,7 @@ import logging
 
 
 from .api import server_task
-from .data import writer_side, data
+from .data import writer_side
 from .logger import logger_init
 from .debugger import debugger_init
 
@@ -14,48 +14,10 @@ log.setLevel(logging.DEBUG)
 
 debugger_init(False, 56782)
 
-# def main() -> None:
-#     async def _main() -> None:
-#         async with asyncio.TaskGroup() as tg:
-#             tg.create_task(writer_side.task())
-#             tg.create_task(server_task(8011))
-
-#     try:
-#         asyncio.run(_main())
-#     except ExceptionGroup as eg:
-#         print(eg.exceptions)
-
-
-# test ------------------
-
-from pydantic import BaseModel
-from data_exchange.datapoint import Float, DatapointBase
-
-
-class TestModel(BaseModel):
-    test_dp: Float = Float()
-
-
-def main() -> None:
-    data = TestModel.construct()
-
-    print(id(data.test_dp))
-
-    for field in data:
-        d = field[1]
-        d.value = 12
-        if isinstance(d, DatapointBase):
-            print("isinstance!")
-    data.dict()["test_dp"].value = 34
-    print(data)
-
-
-# test end ------------------
-
 
 async def test() -> None:
     while True:
-        print(data)
+        print(writer_side.data)
         await asyncio.sleep(1)
 
 

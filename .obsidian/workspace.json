@@ -4,40 +4,39 @@
     "type": "split",
     "children": [
       {
-        "id": "0a1f8676d257608b",
+        "id": "7bc66a89689089da",
         "type": "tabs",
         "children": [
           {
-            "id": "e5b92a53a81350c3",
+            "id": "0e968d2e7f00af32",
             "type": "leaf",
+            "pinned": true,
             "state": {
               "type": "markdown",
               "state": {
                 "file": "README.md",
                 "mode": "preview",
                 "source": true
-              }
+              },
+              "pinned": true
             }
-          }
-        ]
-      },
-      {
-        "id": "888b16f1f6ff08d7",
-        "type": "tabs",
-        "children": [
+          },
           {
-            "id": "c0c0001f4d9a0730",
+            "id": "b68e593f12d877c7",
             "type": "leaf",
+            "pinned": true,
             "state": {
               "type": "markdown",
               "state": {
-                "file": "test_reader_side/README.md",
+                "file": "todo.md",
                 "mode": "source",
                 "source": true
-              }
+              },
+              "pinned": true
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -87,7 +86,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 260.5
   },
   "right": {
     "id": "dc8a8ae3e688ea8b",
@@ -103,7 +102,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "test_reader_side/README.md",
+                "file": "todo.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -120,7 +119,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "test_reader_side/README.md",
+                "file": "todo.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -143,7 +142,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "test_reader_side/README.md"
+                "file": "todo.md"
               }
             }
           }
@@ -154,11 +153,11 @@
     "width": 300,
     "collapsed": true
   },
-  "active": "c0c0001f4d9a0730",
+  "active": "b68e593f12d877c7",
   "lastOpenFiles": [
-    "todo.md",
     "README.md",
     "test_reader_side/README.md",
+    "todo.md",
     "data_exchange/README.md"
   ]
 }

@@ -1,22 +1,22 @@
 import uvicorn
-from fastapi import FastAPI, Query, WebSocket
+from fastapi import FastAPI, Query
 
 
-from .data import data, writer_side, DataModel
+from .data import writer_side, DataModel
 
 api: FastAPI = FastAPI()
 
-
-@api.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket) -> None:
-    await writer_side.ws_server(websocket)
+writer_side.configure_fastapi(
+    api=api,
+    endpoint_ws="/ws",
+)
 
 
 @api.get("/data-change")
 def data_change(value: float = Query()) -> DataModel:
-    data.test_dp1.value = value
-    print(data.dict())
-    return data.dict()
+    writer_side.data.test_dp1.value = value
+    print(writer_side.data)
+    return writer_side.data.dict()
 
 
 async def server_task(port: int) -> None:

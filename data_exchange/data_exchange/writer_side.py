@@ -1,21 +1,23 @@
+"""Writer side."""
+
+# pyright: reportUnnecessaryIsInstance=false
+
 import datetime as dt
 import ipaddress
 from typing import Any
 
-from pydantic import BaseModel
-
-from .abstract_side import AbstractSide
-from .datapoint import DatapointBase, DatapointProcess, Datapoint, DpAny
+from .abstract_side import AbstractSide, TBaseModel
+from .datapoint import Datapoint, DatapointPrepare
 
 
-class WriterSide(AbstractSide):
+class WriterSide(AbstractSide[TBaseModel]):
     """Writer side."""
 
     __writer_priority_delay: float
 
     def __init__(
         self,
-        model: BaseModel,
+        model: TBaseModel,
         reader_side_host: ipaddress.IPv4Address,
         reader_side_port: int = 8000,
         reader_side_endpoint: str = "data",
@@ -26,6 +28,16 @@ class WriterSide(AbstractSide):
 
         Parameters
         ----------
+        model: TBaseModel
+            модель данных pydantic
+        reader_side_host: ipaddress.IPv4Address
+            Адрес компонента с запущенным websocket-сервером
+        reader_side_port: int
+            Порт компонента с запущенным websocket-сервером
+        reader_side_endpoint: str
+            URL компонента с запущенным websocket-сервером
+        send_to_reader_side_interval: float
+            Задержка между рассылкой сообщений
         writer_priority_delay: float
             Время в [с]. Если значение поменялось из программы пользователя,
             то на указанное время значение из _write_value будет иметь более
@@ -42,20 +54,20 @@ class WriterSide(AbstractSide):
 
     def _prepare_send(
         self,
-        data_xch: BaseModel,
-        data_ext: BaseModel,
-        data_int: BaseModel,
+        data_xch: TBaseModel,
+        data_int: TBaseModel,
+        data_ext: TBaseModel,
     ) -> None:
         field_keys = data_ext.dict().keys()
         for field_key in field_keys:
-            field_ext: Any = data_ext.dict()[field_key]
-            if not isinstance(field_ext, DpAny):
+            field_ext: Datapoint[Any] = data_ext.dict()[field_key]
+            if not isinstance(field_ext, Datapoint):
                 raise ValueError("{0} is not Datapoint".format(field_key))
-            field_int: Any = data_int.dict()[field_key]
-            if not isinstance(field_int, DpAny):
+            field_int: Datapoint[Any] = data_int.dict()[field_key]
+            if not isinstance(field_int, Datapoint):
                 raise ValueError("{0} is not Datapoint".format(field_key))
-            field_xch: DpAny = data_xch.dict()[field_key]
-            DatapointProcess.prepare_send_to_reader_side(
+            field_xch: Datapoint[Any] = data_xch.dict()[field_key]
+            DatapointPrepare.send_to_reader_side(
                 field_xch=field_xch,
                 field_int=field_int,
                 field_ext=field_ext,
@@ -63,16 +75,16 @@ class WriterSide(AbstractSide):
 
     def _prepare_rcv(
         self,
-        data_rcv: BaseModel,
-        data_int: BaseModel,
-        data_ext: BaseModel,
+        data_xch: TBaseModel,
+        data_int: TBaseModel,
+        data_ext: TBaseModel,
     ) -> None:
-        field_keys = data_rcv.dict().keys()
+        field_keys = data_xch.dict().keys()
         for field_key in field_keys:
-            field_xch: DatapointBase = data_rcv.dict()[field_key]
-            field_int: DatapointBase = data_int.dict()[field_key]
-            field_ext: DatapointBase = data_ext.dict()[field_key]
-            DatapointProcess.prepare_rcv_from_reader_side(
+            field_xch: Datapoint[Any] = data_xch.dict()[field_key]
+            field_int: Datapoint[Any] = data_int.dict()[field_key]
+            field_ext: Datapoint[Any] = data_ext.dict()[field_key]
+            DatapointPrepare.rcv_from_reader_side(
                 field_xch=field_xch,
                 field_int=field_int,
                 field_ext=field_ext,

@@ -1,14 +1,14 @@
 import uvicorn
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI
 
 from .data import reader_side
 
 api = FastAPI()
 
-
-@api.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket) -> None:
-    await reader_side.ws_server(websocket)
+reader_side.configure_fastapi(
+    api=api,
+    endpoint_ws="/ws",
+)
 
 
 async def server_task(port: int) -> None:

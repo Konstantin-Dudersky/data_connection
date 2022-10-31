@@ -24,4 +24,4 @@ max-line-length = 80
 multi-line-output-modes = 3
 nested-classes-whitelist = Config
 per-file-ignores =
-    # */settings.py:E501,
+    datapoint.py:D102,
