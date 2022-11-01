@@ -1,6 +1,8 @@
+"""data."""
+
 from ipaddress import IPv4Address
 
-from data_exchange.reader_side import ReaderSide
+from data_connection.reader_side import ReaderSide
 
 from .schemas import DataModel
 

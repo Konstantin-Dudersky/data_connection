@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from data_exchange.datapoint import Float
+from data_connection.datapoint import Float
 
 
 class DataModel(BaseModel):

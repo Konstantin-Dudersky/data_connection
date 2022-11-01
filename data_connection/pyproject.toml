@@ -10,9 +10,9 @@ line-length = 79
 [tool.poetry]
 authors = ["konstantin-dudersky <konstantin.dudersky@gmail.com>"]
 description = "Передача данных между сервисами"
-name = "data_exchange"
+name = "data-connection"
 readme = "README.md"
-repository = "https://github.com/konstantin-dudersky/data_connector"
+repository = "https://github.com/Konstantin-Dudersky/data_exchange.git"
 version = "0.0.3"
 
 

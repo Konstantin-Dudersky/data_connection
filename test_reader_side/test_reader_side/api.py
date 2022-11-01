@@ -1,3 +1,5 @@
+"""API."""
+
 import uvicorn
 from fastapi import FastAPI
 
@@ -13,8 +15,11 @@ reader_side.configure_fastapi(
 
 async def server_task(port: int) -> None:
     """Задача для запуска сервера api.
-    :param api: ссылка на api
-    :param port: порт
+
+    Parameters
+    ----------
+    port: int
+        порт
     """
     config = uvicorn.Config(
         api,

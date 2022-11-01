@@ -1,5 +1,8 @@
+"""data."""
+
 from ipaddress import IPv4Address
-from data_exchange.writer_side import WriterSide
+
+from data_connection.writer_side import WriterSide
 from test_reader_side.schemas import DataModel
 
 

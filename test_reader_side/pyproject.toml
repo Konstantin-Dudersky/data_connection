@@ -17,7 +17,7 @@ python = "^3.11"
 
 uvicorn = "*"
 
-data_exchange = { path = "../data_exchange", develop = true }
+data_connection = { path = "../data_connection", develop = true }
 
 
 [tool.poetry.group.dev.dependencies]

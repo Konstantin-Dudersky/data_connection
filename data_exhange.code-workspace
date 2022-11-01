@@ -5,7 +5,7 @@
       "path": "."
     },
     {
-      "path": "data_exchange"
+      "path": "data_connection"
     },
     {
       "path": "test_reader_side"

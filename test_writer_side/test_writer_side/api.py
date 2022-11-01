@@ -1,3 +1,5 @@
+"""API."""
+
 import uvicorn
 from fastapi import FastAPI, Query
 
@@ -16,13 +18,16 @@ writer_side.configure_fastapi(
 def data_change(value: float = Query()) -> DataModel:
     writer_side.data.test_dp1.value = value
     print(writer_side.data)
-    return writer_side.data.dict()
+    return writer_side.data
 
 
 async def server_task(port: int) -> None:
     """Задача для запуска сервера api.
-    :param api: ссылка на api
-    :param port: порт
+
+    Parameters
+    ----------
+    port: int
+        порт
     """
     config = uvicorn.Config(
         api,

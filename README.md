@@ -1,4 +1,4 @@
-# data_exchange
+# data_connection
 
 ## Описание концепции
 

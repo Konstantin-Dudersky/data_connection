@@ -20,8 +20,14 @@
 poetry install
 ```
 
+Собрать пакет
+
+```sh
+poetry build
+```
+
 Опубликовать пакет
 
 ```sh
-poetry build && poetry publish
+poetry publish --username Konstantin.Dudersky@gmail.com --password __TOKEN__
 ```
