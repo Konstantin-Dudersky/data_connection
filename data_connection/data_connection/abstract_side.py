@@ -5,8 +5,9 @@
 import asyncio
 import ipaddress
 import logging
+import pickle
 from time import perf_counter_ns
-from typing import Any, Final, Generic, TypeVar
+from typing import Any, Final, Generic, Iterable, TypeVar
 
 from fastapi import FastAPI, WebSocket
 from pydantic import BaseModel
@@ -20,7 +21,31 @@ log.setLevel(logging.DEBUG)
 
 NS_IN_S: Final[float] = 1e9
 URL: Final[str] = "ws://{host}:{port}{endpoint}"
-TBaseModel = TypeVar("TBaseModel", bound=BaseModel)  # noqa: WPS111
+TBaseModel = TypeVar("TBaseModel", bound=BaseModel)
+TModelField = Datapoint[Any] | dict[str, Any]
+
+
+def isinstance_iterable(
+    __obj: Iterable[TModelField],
+    __class_or_tuple: type,
+) -> bool:
+    """Все элементы последовательности соответстуют типу.
+
+    Parameters
+    ----------
+    __obj: Iterable[TModelField]
+        Последовательность объектов
+    __class_or_tuple: type
+        Тип для проверки
+
+    Returns
+    -------
+    True - все элементы соответсвуют
+    """
+    for __obj_item in __obj:
+        if not isinstance(__obj_item, __class_or_tuple):
+            return False
+    return True
 
 
 class AbstractSide(Generic[TBaseModel]):  # noqa: WPS214
@@ -120,13 +145,13 @@ class AbstractSide(Generic[TBaseModel]):  # noqa: WPS214
         while True:  # noqa: WPS457
             begin: int = perf_counter_ns()
             data_xch: TBaseModel = self.__model.construct()
-            self._prepare_send(
+            self._prepare_send_model(
                 data_xch=data_xch,
                 data_int=self.__data_int,
                 data_ext=self.__data_ext,
             )
             try:
-                await websocket.send_text(data_xch.json(by_alias=True))
+                await websocket.send_bytes(pickle.dumps(data_xch))
             except ConnectionClosedOK:
                 log.info(
                     "connection closed from client: {0}".format(
@@ -149,9 +174,13 @@ class AbstractSide(Generic[TBaseModel]):  # noqa: WPS214
         async for websocket in websocket_client:
             try:
                 async for message in websocket:
-                    log.debug("recieved message: {0}".format(message))
-                    msg_model: TBaseModel = self.__model.parse_raw(message)
-                    self._prepare_rcv(
+                    msg_model: TBaseModel = self.__model.parse_raw(
+                        b=message,
+                        content_type="application/pickle",
+                        allow_pickle=True,
+                    )
+                    log.debug("recieved message: {0}".format(msg_model))
+                    self._prepare_rcv_model(
                         data_xch=msg_model,
                         data_int=self.__data_int,
                         data_ext=self.__data_ext,
@@ -159,7 +188,7 @@ class AbstractSide(Generic[TBaseModel]):  # noqa: WPS214
             except ConnectionClosed:
                 await asyncio.sleep(1)
 
-    def _prepare_send(
+    def _prepare_send_model(
         self,
         data_xch: TBaseModel,
         data_int: TBaseModel,
@@ -167,7 +196,7 @@ class AbstractSide(Generic[TBaseModel]):  # noqa: WPS214
     ) -> None:
         raise NotImplementedError
 
-    def _prepare_rcv(
+    def _prepare_rcv_model(
         self,
         data_xch: TBaseModel,
         data_int: TBaseModel,
@@ -175,5 +204,10 @@ class AbstractSide(Generic[TBaseModel]):  # noqa: WPS214
     ) -> None:
         raise NotImplementedError
 
-    def _is_datapoint(self, field: Any) -> bool:
-        return isinstance(field, Datapoint)
+    def _field_to_datapoint(
+        self,
+        field: Datapoint[Any] | Any,
+    ) -> Datapoint[Any] | None:
+        if not isinstance(field, Datapoint):
+            return None
+        return field

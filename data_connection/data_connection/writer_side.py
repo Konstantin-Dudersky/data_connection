@@ -6,7 +6,7 @@ import datetime as dt
 import ipaddress
 from typing import Any
 
-from .abstract_side import AbstractSide, TBaseModel
+from .abstract_side import AbstractSide, TBaseModel, TModelField
 from .datapoint import Datapoint, DatapointPrepare
 
 
@@ -52,41 +52,105 @@ class WriterSide(AbstractSide[TBaseModel]):
         )
         self.__writer_priority_delay = writer_priority_delay
 
-    def _prepare_send(
+    def _prepare_send_model(
         self,
         data_xch: TBaseModel,
         data_int: TBaseModel,
         data_ext: TBaseModel,
     ) -> None:
-        field_keys = data_ext.dict().keys()
+        self.__prepare_send_dict(
+            dict_xch=data_xch.dict(),
+            dict_int=data_int.dict(),
+            dict_ext=data_ext.dict(),
+        )
+
+    def _prepare_rcv_model(
+        self,
+        data_xch: TBaseModel,
+        data_int: TBaseModel,
+        data_ext: TBaseModel,
+    ) -> None:
+        self.__prepare_rcv_dict(
+            dict_xch=data_xch.dict(),
+            dict_int=data_int.dict(),
+            dict_ext=data_ext.dict(),
+        )
+
+    def __prepare_send_dict(  # noqa: WPS231
+        self,
+        dict_xch: dict[str, Any],
+        dict_int: dict[str, Any],
+        dict_ext: dict[str, Any],
+    ) -> None:
+        field_keys = dict_ext.keys()
         for field_key in field_keys:
-            field_ext: Datapoint[Any] = data_ext.dict()[field_key]
-            if not isinstance(field_ext, Datapoint):
-                raise ValueError("{0} is not Datapoint".format(field_key))
-            field_int: Datapoint[Any] = data_int.dict()[field_key]
-            if not isinstance(field_int, Datapoint):
-                raise ValueError("{0} is not Datapoint".format(field_key))
-            field_xch: Datapoint[Any] = data_xch.dict()[field_key]
-            DatapointPrepare.send_to_reader_side(
-                field_xch=field_xch,
-                field_int=field_int,
-                field_ext=field_ext,
+            field_xch: TModelField = dict_xch[field_key]
+            field_int: TModelField = dict_int[field_key]
+            field_ext: TModelField = dict_ext[field_key]
+            # try Datapoint
+            if (  # noqa: WPS337
+                isinstance(field_xch, Datapoint)
+                and isinstance(field_int, Datapoint)
+                and isinstance(field_ext, Datapoint)
+            ):
+                DatapointPrepare.send_to_reader_side(
+                    field_xch=field_xch,
+                    field_int=field_int,
+                    field_ext=field_ext,
+                )
+                continue
+            # try BaseModel
+            if (  # noqa: WPS337
+                isinstance(field_xch, dict)
+                and isinstance(field_int, dict)
+                and isinstance(field_ext, dict)
+            ):
+                self.__prepare_send_dict(
+                    dict_xch=field_xch,
+                    dict_int=field_int,
+                    dict_ext=field_ext,
+                )
+                continue
+            raise ValueError(
+                "Incrorrect type for field: {0}".format(field_key),
             )
 
-    def _prepare_rcv(
+    def __prepare_rcv_dict(  # noqa: WPS231
         self,
-        data_xch: TBaseModel,
-        data_int: TBaseModel,
-        data_ext: TBaseModel,
+        dict_xch: dict[str, Any],
+        dict_int: dict[str, Any],
+        dict_ext: dict[str, Any],
     ) -> None:
-        field_keys = data_xch.dict().keys()
+        field_keys = dict_ext.keys()
         for field_key in field_keys:
-            field_xch: Datapoint[Any] = data_xch.dict()[field_key]
-            field_int: Datapoint[Any] = data_int.dict()[field_key]
-            field_ext: Datapoint[Any] = data_ext.dict()[field_key]
-            DatapointPrepare.rcv_from_reader_side(
-                field_xch=field_xch,
-                field_int=field_int,
-                field_ext=field_ext,
-                delay=dt.timedelta(seconds=self.__writer_priority_delay),
+            field_xch: TModelField = dict_xch[field_key]
+            field_int: TModelField = dict_int[field_key]
+            field_ext: TModelField = dict_ext[field_key]
+            # try Datapoint
+            if (  # noqa: WPS337
+                isinstance(field_xch, Datapoint)
+                and isinstance(field_int, Datapoint)
+                and isinstance(field_ext, Datapoint)
+            ):
+                DatapointPrepare.rcv_from_reader_side(
+                    field_xch=field_xch,
+                    field_int=field_int,
+                    field_ext=field_ext,
+                    delay=dt.timedelta(seconds=self.__writer_priority_delay),
+                )
+                continue
+            # try BaseModel
+            if (  # noqa: WPS337
+                isinstance(field_xch, dict)
+                and isinstance(field_int, dict)
+                and isinstance(field_ext, dict)
+            ):
+                self.__prepare_rcv_dict(
+                    dict_xch=field_xch,
+                    dict_int=field_int,
+                    dict_ext=field_ext,
+                )
+                continue
+            raise ValueError(
+                "Incrorrect type for field: {0}".format(field_key),
             )

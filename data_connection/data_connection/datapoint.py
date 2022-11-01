@@ -4,6 +4,14 @@ import datetime as dt
 from dataclasses import dataclass, field
 from typing import Generic, Self, TypeVar
 
+__all__: list[str] = [
+    "Bool",
+    "Datapoint",
+    "Float",
+    "Int",
+    "Str",
+]
+
 T = TypeVar("T")  # noqa: WPS111
 
 
@@ -86,11 +94,11 @@ class Datapoint(Generic[T]):
 
 
 @dataclass
-class Float(Datapoint[float]):
-    """Значение float."""
+class Bool(Datapoint[bool]):
+    """Значение int."""
 
-    value_read: float = 0
-    value_write: float = 0
+    value_read: bool = False
+    value_write: bool = False
 
 
 @dataclass
@@ -99,6 +107,22 @@ class Int(Datapoint[int]):
 
     value_read: int = 0
     value_write: int = 0
+
+
+@dataclass
+class Float(Datapoint[float]):
+    """Значение float."""
+
+    value_read: float = 0
+    value_write: float = 0
+
+
+@dataclass
+class Str(Datapoint[str]):
+    """Значение int."""
+
+    value_read: str = ""
+    value_write: str = ""
 
 
 class DatapointPrepare(Generic[T]):

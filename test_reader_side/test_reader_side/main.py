@@ -15,7 +15,7 @@ async def counter() -> None:
     counter: int = 0
     while True:
         counter += 1
-        reader_side.data.test_dp1.value = counter
+        reader_side.data.inner.test_idp.set_from_reader_side(counter)
         await asyncio.sleep(2)
 
 
