@@ -180,6 +180,7 @@ class AbstractSide(Generic[TBaseModel]):  # noqa: WPS214
                         allow_pickle=True,
                     )
                     log.debug("recieved message: {0}".format(msg_model))
+                    print(msg_model.__dict__)
                     self._prepare_rcv_model(
                         data_xch=msg_model,
                         data_int=self.__data_int,

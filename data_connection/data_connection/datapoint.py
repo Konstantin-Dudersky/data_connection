@@ -1,34 +1,31 @@
 """Классы datapoint - отдельное значение."""
 
 import datetime as dt
-from dataclasses import dataclass, field
-from typing import Generic, Self, TypeVar
+
+from typing import Any, Callable, Generator, Generic, Self, TypeVar
+
+from pydantic import ValidationError
+from pydantic.error_wrappers import ErrorList
+from pydantic.fields import ModelField
 
 __all__: list[str] = [
-    "Bool",
     "Datapoint",
-    "Float",
-    "Int",
-    "Str",
 ]
 
 T = TypeVar("T")  # noqa: WPS111
 
 
-@dataclass
 class Datapoint(Generic[T]):
     """Базовый класс для данных."""
 
-    _value_default: T = field(init=True)
-    value_read: T = field(init=False)
-    value_write: T = field(init=False)
-    ts_read: dt.datetime = field(init=False, default=dt.datetime.min)
-    ts_write: dt.datetime = field(init=False, default=dt.datetime.min)
+    value_read: T
+    value_write: T
+    ts_read: dt.datetime = dt.datetime.min
+    ts_write: dt.datetime = dt.datetime.min
 
-    def __post_init__(self) -> None:
-        """Инициалиация."""
-        self.value_read = self._value_default
-        self.value_write = self._value_default
+    def __init__(self, defaul_value: T) -> None:
+        self.value_read = defaul_value
+        self.value_write = defaul_value
 
     @property
     def value(self) -> T:
@@ -98,33 +95,53 @@ class Datapoint(Generic[T]):
         self.value_write = other.value_write
         self.ts_write = other.ts_write
 
+    @classmethod
+    def __get_validators__(
+        cls,
+    ) -> Generator[Callable[[Self, ModelField], Self], None, None]:
+        """Вызывается pydantic.
 
-@dataclass
-class Bool(Datapoint[bool]):
-    """Значение int."""
+        Yields
+        ------
+        _validate
+            Генератор для валидации
+        """
+        yield cls._validate
 
-    _value_default: bool = field(init=False, default=False)
+    @classmethod
+    def _validate(cls, value: Self, field: ModelField) -> Self:
+        if not isinstance(value, cls):
+            raise TypeError("Invalid value")
+        if not field.sub_fields:
+            return value
+        dp_type: ModelField = field.sub_fields[0]
+        errors: list[ErrorList] = []
+        _, error = dp_type.validate(
+            v=value.value_write,
+            values={},
+            loc="aged",
+        )
+        if error:
+            errors.append(error)
+        if errors:
+            raise ValidationError(errors, cls)
+        return value
 
+    def __repr__(self) -> str:
+        return "Datapoint({0})".format(self.json_encoder())
 
-@dataclass
-class Int(Datapoint[int]):
-    """Значение int."""
-
-    _value_default: int = field(init=False, default=0)
-
-
-@dataclass
-class Float(Datapoint[float]):
-    """Значение float."""
-
-    _value_default: float = field(init=False, default=0.0)  # noqa: WPS358
-
-
-@dataclass
-class Str(Datapoint[str]):
-    """Значение int."""
-
-    _value_default: str = field(init=False, default="")
+    def json_encoder(self) -> dict[str, Any]:
+        """Кодирование в json."""
+        return {
+            "read": {
+                "value": self.value_read,
+                "ts": self.ts_read.isoformat(),
+            },
+            "write": {
+                "value": self.value_write,
+                "ts": self.ts_write.isoformat(),
+            },
+        }
 
 
 class DatapointPrepare(Generic[T]):

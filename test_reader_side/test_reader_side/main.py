@@ -16,6 +16,7 @@ async def counter() -> None:
     while True:
         counter += 1
         # reader_side.data.inner.test_idp.set_from_reader_side(counter)
+        reader_side.data.test_float.set_from_reader_side(counter)
         await asyncio.sleep(2)
 
 

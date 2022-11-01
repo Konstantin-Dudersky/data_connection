@@ -103,6 +103,7 @@ class Reader(object):
         for datapoint in self.__datapoints:
             node: Node = self.__client.get_node(datapoint.node_id)
             datapoint.node(node=node)
+        self.__ready = True
 
     async def task(self) -> None:
         """Задача для коммуникации."""

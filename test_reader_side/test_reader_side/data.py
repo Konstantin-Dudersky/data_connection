@@ -2,7 +2,7 @@
 
 from ipaddress import IPv4Address
 
-from data_connection.datapoint import Float, Int, Str, Bool
+# from data_connection.datapoint import Float, Int, Str, Bool
 from data_connection.reader_side import ReaderSide
 
 from .schemas import DataModel
