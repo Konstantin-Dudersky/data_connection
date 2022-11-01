@@ -1,14 +1,15 @@
 from pydantic import BaseModel
 
-from data_connection.datapoint import Bool, Float, Int, Str
+from data_connection.datapoint import Bool, Float, Int, Str, Datapoint
 
 
 class InnerModel(BaseModel):
-    test_idp: Int = Int()
+    test_int: Int = Int()
+    test_wstring: Str = Str()
 
 
 class DataModel(BaseModel):
-    test_dp1: Float = Float()
-    test_dp2: Bool = Bool()
-    test_dp3: Str = Str()
+    test_float: Datapoint[float] = Datapoint[float](0)
+    test_bool: Bool = Bool()
+    test_str: Str = Str()
     inner: InnerModel = InnerModel()

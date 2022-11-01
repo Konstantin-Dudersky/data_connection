@@ -19,10 +19,16 @@ T = TypeVar("T")  # noqa: WPS111
 class Datapoint(Generic[T]):
     """Базовый класс для данных."""
 
-    ts_read: dt.datetime = dt.datetime.min
-    ts_write: dt.datetime = dt.datetime.min
-    value_read: T = field(kw_only=True)
-    value_write: T = field(kw_only=True)
+    _value_default: T = field(init=True)
+    value_read: T = field(init=False)
+    value_write: T = field(init=False)
+    ts_read: dt.datetime = field(init=False, default=dt.datetime.min)
+    ts_write: dt.datetime = field(init=False, default=dt.datetime.min)
+
+    def __post_init__(self) -> None:
+        """Инициалиация."""
+        self.value_read = self._value_default
+        self.value_write = self._value_default
 
     @property
     def value(self) -> T:
@@ -97,32 +103,28 @@ class Datapoint(Generic[T]):
 class Bool(Datapoint[bool]):
     """Значение int."""
 
-    value_read: bool = False
-    value_write: bool = False
+    _value_default: bool = field(init=False, default=False)
 
 
 @dataclass
 class Int(Datapoint[int]):
     """Значение int."""
 
-    value_read: int = 0
-    value_write: int = 0
+    _value_default: int = field(init=False, default=0)
 
 
 @dataclass
 class Float(Datapoint[float]):
     """Значение float."""
 
-    value_read: float = 0
-    value_write: float = 0
+    _value_default: float = field(init=False, default=0.0)  # noqa: WPS358
 
 
 @dataclass
 class Str(Datapoint[str]):
     """Значение int."""
 
-    value_read: str = ""
-    value_write: str = ""
+    _value_default: str = field(init=False, default="")
 
 
 class DatapointPrepare(Generic[T]):

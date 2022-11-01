@@ -47,7 +47,8 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -113,7 +114,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "README.md",
+                "file": "todo.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -130,7 +131,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "README.md",
+                "file": "todo.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -153,7 +154,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "README.md"
+                "file": "todo.md"
               }
             }
           }
@@ -164,10 +165,10 @@
     "width": 300,
     "collapsed": true
   },
-  "active": "0e968d2e7f00af32",
+  "active": "b68e593f12d877c7",
   "lastOpenFiles": [
-    "todo.md",
     "README.md",
+    "todo.md",
     "test_reader_side/README.md",
     "data_exchange/README.md"
   ]

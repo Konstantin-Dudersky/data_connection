@@ -19,6 +19,7 @@ version = "0.0.3"
 [tool.poetry.dependencies]
 python = "^3.11"
 
+asyncua = { version = "^1.0", optional = true }
 fastapi = "0.*"
 pydantic = "1.*"
 websockets = "10.*"
@@ -28,6 +29,10 @@ websockets = "10.*"
 black = "*"
 wemake-python-styleguide = "0.17.0"
 poethepoet = "*"
+
+
+[tool.poetry.extras]
+asyncua = ["asyncua"]
 
 
 [tool.poe.tasks]
