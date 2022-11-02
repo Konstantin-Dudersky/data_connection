@@ -45,5 +45,6 @@ main = { script = "src.main:entry" }
 [tool.pyright]
 pythonPlatform = "Linux"
 pythonVersion = "3.11"
+reportUnnecessaryTypeIgnoreComment = true
 stubPath = '.venv/typings'
 typeCheckingMode = "strict"

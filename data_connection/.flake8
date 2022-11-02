@@ -9,8 +9,10 @@ exclude =
 ignore =
     D301, # Use r""" if any backslashes in a docstring
     E203, # whitespace before ':'
-    # I001, # isort found an import in the wrong position TODO
-    # I005, # isort found an unexpected missing import TODO
+    I001, # isort found an import in the wrong position TODO
+    I003,
+    I004,
+    I005, # isort found an unexpected missing import TODO
     S104, # Possible binding to all interfaces.
     W503, # line break before binary operator
     WPS112,#  Found private name pattern

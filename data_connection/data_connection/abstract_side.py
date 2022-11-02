@@ -5,7 +5,7 @@
 import asyncio
 import ipaddress
 import logging
-import pickle
+import pickle  # noqa: S403
 from time import perf_counter_ns
 from typing import Any, Final, Generic, Iterable, TypeVar
 
@@ -17,7 +17,7 @@ from websockets.legacy import client
 from .datapoint import Datapoint
 
 log: logging.Logger = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 NS_IN_S: Final[float] = 1e9
 URL: Final[str] = "ws://{host}:{port}{endpoint}"
@@ -180,7 +180,6 @@ class AbstractSide(Generic[TBaseModel]):  # noqa: WPS214
                         allow_pickle=True,
                     )
                     log.debug("recieved message: {0}".format(msg_model))
-                    print(msg_model.__dict__)
                     self._prepare_rcv_model(
                         data_xch=msg_model,
                         data_int=self.__data_int,

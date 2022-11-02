@@ -17,7 +17,6 @@ debugger_init(False, 56782)
 
 async def test() -> None:
     while True:
-        print(writer_side.data)
         await asyncio.sleep(1)
 
 

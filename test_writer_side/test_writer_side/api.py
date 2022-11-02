@@ -16,8 +16,7 @@ writer_side.configure_fastapi(
 
 @api.get("/data-change")
 def data_change(value: float = Query()) -> DataModel:
-    writer_side.data.test_dp1.value = value
-    print(writer_side.data)
+    writer_side.data.test_float.value = value
     return writer_side.data
 
 

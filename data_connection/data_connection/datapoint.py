@@ -1,7 +1,6 @@
 """Классы datapoint - отдельное значение."""
 
 import datetime as dt
-
 from typing import Any, Callable, Generator, Generic, Self, TypeVar
 
 from pydantic import ValidationError
@@ -10,25 +9,56 @@ from pydantic.fields import ModelField
 
 __all__: list[str] = [
     "Datapoint",
+    "DatapointPrepare",
+    "TDatapoint",
 ]
 
-T = TypeVar("T")  # noqa: WPS111
+TDatapoint = TypeVar("TDatapoint")
 
 
-class Datapoint(Generic[T]):
+class Datapoint(Generic[TDatapoint]):  # noqa: WPS214
     """Базовый класс для данных."""
 
-    value_read: T
-    value_write: T
+    value_read: TDatapoint
+    value_write: TDatapoint
     ts_read: dt.datetime = dt.datetime.min
     ts_write: dt.datetime = dt.datetime.min
 
-    def __init__(self, defaul_value: T) -> None:
-        self.value_read = defaul_value
-        self.value_write = defaul_value
+    def __init__(self, default: TDatapoint) -> None:
+        """Базовый класс для данных.
+
+        Parameters
+        ----------
+        default: TDatapoint
+            Начальное значение
+        """
+        self.value_read = default
+        self.value_write = default
+
+    def __repr__(self) -> str:
+        """Строковое представление.
+
+        Returns
+        -------
+        Строковое представление.
+        """
+        return "Datapoint({0})".format(self.json_encoder())
+
+    @classmethod
+    def __get_validators__(
+        cls,
+    ) -> Generator[Callable[[Self, ModelField], Self], None, None]:
+        """Вызывается pydantic.
+
+        Yields
+        ------
+        _validate
+            Генератор для валидации
+        """
+        yield cls._validate
 
     @property
-    def value(self) -> T:
+    def value(self) -> TDatapoint:
         """Значение для считываения клиентской программой.
 
         Обновляется метка времени чтения.
@@ -41,14 +71,14 @@ class Datapoint(Generic[T]):
         return self.value_read
 
     @value.setter
-    def value(self, value: T) -> None:
+    def value(self, value: TDatapoint) -> None:
         """Изменение значения на стороне writer_side.
 
         Обновляется метка времени записи.
 
         Parameters
         ----------
-        value: T
+        value: TDatapoint
             Новое значение
         """
         self.ts_write = dt.datetime.utcnow()
@@ -57,14 +87,14 @@ class Datapoint(Generic[T]):
 
     def set_from_reader_side(
         self,
-        value: T,
+        value: TDatapoint,
         ts: dt.datetime | None = None,
     ) -> None:
         """Установить значение со стороны reader_side.
 
         Parameters
         ----------
-        value: T
+        value: TDatapoint
             Новое значение
         ts: dt.datetime
             Опционально - метка времени. Если отсутсвует, подставляется
@@ -95,18 +125,23 @@ class Datapoint(Generic[T]):
         self.value_write = other.value_write
         self.ts_write = other.ts_write
 
-    @classmethod
-    def __get_validators__(
-        cls,
-    ) -> Generator[Callable[[Self, ModelField], Self], None, None]:
-        """Вызывается pydantic.
+    def json_encoder(self) -> dict[str, Any]:
+        """Кодирование в json.
 
-        Yields
-        ------
-        _validate
-            Генератор для валидации
+        Returns
+        -------
+        Словарь.
         """
-        yield cls._validate
+        return {
+            "read": {
+                "value": self.value_read,
+                "ts": self.ts_read.isoformat(),
+            },
+            "write": {
+                "value": self.value_write,
+                "ts": self.ts_write.isoformat(),
+            },
+        }
 
     @classmethod
     def _validate(cls, value: Self, field: ModelField) -> Self:
@@ -124,35 +159,22 @@ class Datapoint(Generic[T]):
         if error:
             errors.append(error)
         if errors:
-            raise ValidationError(errors, cls)
+            raise ValidationError(
+                errors=errors,
+                model=cls,  # pyright: ignore[reportGeneralTypeIssues]
+            )
         return value
 
-    def __repr__(self) -> str:
-        return "Datapoint({0})".format(self.json_encoder())
 
-    def json_encoder(self) -> dict[str, Any]:
-        """Кодирование в json."""
-        return {
-            "read": {
-                "value": self.value_read,
-                "ts": self.ts_read.isoformat(),
-            },
-            "write": {
-                "value": self.value_write,
-                "ts": self.ts_write.isoformat(),
-            },
-        }
-
-
-class DatapointPrepare(Generic[T]):
+class DatapointPrepare(Generic[TDatapoint]):
     """Преобразование полей перед отправкой / после получения."""
 
     @classmethod
     def send_to_writer_side(
         cls,
-        field_xch: Datapoint[T],
-        field_int: Datapoint[T],
-        field_ext: Datapoint[T],
+        field_xch: Datapoint[TDatapoint],
+        field_int: Datapoint[TDatapoint],
+        field_ext: Datapoint[TDatapoint],
     ) -> None:
         """Подготовка перед передачей reader_side -> writer_side.
 
@@ -171,9 +193,9 @@ class DatapointPrepare(Generic[T]):
     @classmethod
     def send_to_reader_side(
         cls,
-        field_xch: Datapoint[T],
-        field_int: Datapoint[T],
-        field_ext: Datapoint[T],
+        field_xch: Datapoint[TDatapoint],
+        field_int: Datapoint[TDatapoint],
+        field_ext: Datapoint[TDatapoint],
     ) -> None:
         """Подготовка перед передачей writer_side -> reader_side.
 
@@ -192,9 +214,9 @@ class DatapointPrepare(Generic[T]):
     @classmethod
     def rcv_from_reader_side(
         cls,
-        field_xch: Datapoint[T],
-        field_int: Datapoint[T],
-        field_ext: Datapoint[T],
+        field_xch: Datapoint[TDatapoint],
+        field_int: Datapoint[TDatapoint],
+        field_ext: Datapoint[TDatapoint],
         delay: dt.timedelta,
     ) -> None:
         """Подготовка после передачи reader_side -> writer_side.
@@ -222,9 +244,9 @@ class DatapointPrepare(Generic[T]):
     @classmethod
     def rcv_from_writer_side(
         cls,
-        field_xch: Datapoint[T],
-        field_int: Datapoint[T],
-        field_ext: Datapoint[T],
+        field_xch: Datapoint[TDatapoint],
+        field_int: Datapoint[TDatapoint],
+        field_ext: Datapoint[TDatapoint],
     ) -> None:
         """Подготовка после передачи reader_side -> writer_side.
 

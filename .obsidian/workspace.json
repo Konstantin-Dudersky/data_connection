@@ -77,7 +77,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "#pyright",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -94,7 +94,8 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -165,7 +166,7 @@
     "width": 300,
     "collapsed": true
   },
-  "active": "b68e593f12d877c7",
+  "active": "8a27ee261a3c2348",
   "lastOpenFiles": [
     "README.md",
     "todo.md",
