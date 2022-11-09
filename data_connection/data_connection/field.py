@@ -1,7 +1,8 @@
 """Классы datapoint - отдельное значение."""
 
 import datetime as dt
-from typing import Any, Callable, Generator, Generic, Self, TypeVar
+from enum import Enum
+from typing import Any, Callable, Generator, Generic, Literal, Self, TypeVar
 
 from pydantic import ValidationError
 from pydantic.error_wrappers import ErrorList
@@ -11,24 +12,45 @@ from pydantic.fields import ModelField
 TField = TypeVar("TField")
 
 
+class Access(str, Enum):  # noqa: WPS600
+    """Типы доступа к полю."""
+
+    rw = "rw"
+    ro = "ro"
+    wo = "wo"
+
+
 class Field(Generic[TField]):  # noqa: WPS214
     """Базовый класс для данных."""
 
     value_read: TField
     value_write: TField
-    ts_read: dt.datetime = dt.datetime.min
-    ts_write: dt.datetime = dt.datetime.min
+    ts_read: dt.datetime
+    ts_write: dt.datetime
+    __access: Access
 
-    def __init__(self, default: TField) -> None:
+    def __init__(
+        self,
+        default: TField,
+        access: Literal["ro", "wo", "rw"] = "rw",
+    ) -> None:
         """Базовый класс для данных.
 
         Parameters
         ----------
         default: TField
             Начальное значение
+        access: str
+            Доступ к полю:
+            ro - read-only
+            wo - write-only
+            rw - read-write
         """
         self.value_read = default
         self.value_write = default
+        self.ts_read = dt.datetime.min
+        self.ts_write = dt.datetime.min
+        self.__access = Access(access)
 
     def __repr__(self) -> str:
         """Строковое представление.
@@ -79,6 +101,10 @@ class Field(Generic[TField]):  # noqa: WPS214
         self.ts_write = dt.datetime.utcnow()
         self.value_write = value  # noqa: WPS601
         self.value_read = value  # noqa: WPS601
+
+    @property
+    def access(self) -> Access:
+        return self.__access
 
     def set_from_reader_side(
         self,
@@ -175,11 +201,11 @@ class FieldPrepare(Generic[TField]):
 
         Parameters
         ----------
-        field_xch: Datapoint[T]
+        field_xch: Field[T]
             Поле из области exchange
-        field_int: Datapoint[T]
+        field_int: Field[T]
             Поле из области internal
-        field_ext: Datapoint[T]
+        field_ext: Field[T]
             Поле из области external
         """
         field_int.update_read_from(field_ext)
@@ -196,11 +222,11 @@ class FieldPrepare(Generic[TField]):
 
         Parameters
         ----------
-        field_xch: Datapoint[T]
+        field_xch: Field[T]
             Поле из области exchange
-        field_int: Datapoint[T]
+        field_int: Field[T]
             Поле из области internal
-        field_ext: Datapoint[T]
+        field_ext: Field[T]
             Поле из области external
         """
         field_int.update_write_from(field_ext)
@@ -218,11 +244,11 @@ class FieldPrepare(Generic[TField]):
 
         Parameters
         ----------
-        field_xch: Datapoint[T]
+        field_xch: Field[T]
             Поле из области exchange
-        field_int: Datapoint[T]
+        field_int: Field[T]
             Поле из области internal
-        field_ext: Datapoint[T]
+        field_ext: Field[T]
             Поле из области external
         delay: dt.timedelta
             Задержка, в течение которой значение writer_side имеет приоритет
@@ -247,11 +273,11 @@ class FieldPrepare(Generic[TField]):
 
         Parameters
         ----------
-        field_xch: Datapoint[T]
+        field_xch: Field[T]
             Поле из области exchange
-        field_int: Datapoint[T]
+        field_int: Field[T]
             Поле из области internal
-        field_ext: Datapoint[T]
+        field_ext: Field[T]
             Поле из области external
         """
         field_int.update_write_from(field_xch)

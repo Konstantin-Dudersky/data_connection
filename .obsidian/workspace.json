@@ -48,7 +48,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -114,7 +114,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "test/opcua_client/README.md",
+                "file": "todo.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -131,7 +131,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "test/opcua_client/README.md",
+                "file": "todo.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -154,7 +154,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "test/opcua_client/README.md"
+                "file": "todo.md"
               }
             }
           }
@@ -165,8 +165,9 @@
     "width": 300,
     "collapsed": true
   },
-  "active": "8f25827ccc093031",
+  "active": "b68e593f12d877c7",
   "lastOpenFiles": [
+    "test/opcua_client/README.md",
     "todo.md",
     "README.md",
     "test/opcua_client/README.md.md",

@@ -8,6 +8,6 @@ class InnerModel(BaseModel):
 
 class DataModel(BaseModel):
     test_float: Field[float] = Field[float](0.1)
-    test_bool: Field[bool] = Field[bool](False)
+    test_bool: Field[bool] = Field[bool](False, "rw")
     test_str: Field[str] = Field[str]("")
     inner: InnerModel = InnerModel()

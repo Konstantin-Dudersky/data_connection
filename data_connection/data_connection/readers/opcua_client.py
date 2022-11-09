@@ -11,7 +11,7 @@ from asyncua.common.node import Node
 from asyncua.ua import DataValue, Variant, VariantType
 from asyncua.ua.uaerrors import UaStatusCodeError, BadTypeMismatch
 
-from ..field import Field as DatapointComm, TField
+from ..field import Field as FieldComm, TField, Access
 
 __all__: list[str] = [
     "Field",
@@ -43,14 +43,14 @@ requested opc ua type: {variant_type}"""
 class Field(Generic[TField]):
     """Датапоинт для доступа к OPC UA."""
 
-    __datapoint: DatapointComm[TField]
+    __field: FieldComm[TField]
     __node_id: str
     __node: Node | None
     __last_ts_write: dt.datetime
 
     def __init__(
         self,
-        datapoint: DatapointComm[TField],
+        field: FieldComm[TField],
         node_id: str,
     ) -> None:
         """Датапоинт для доступа к OPC UA.
@@ -62,7 +62,7 @@ class Field(Generic[TField]):
         node_id: str
             Адрес узла в OPC UA
         """
-        self.__datapoint = datapoint
+        self.__field = field
         self.__node_id = node_id
         self.__node = None
         self.__last_ts_write = dt.datetime.min
@@ -71,10 +71,12 @@ class Field(Generic[TField]):
         """Прочитать значение."""
         if not self.__node:
             return
+        if self.__field.access == Access.wo:
+            return
         value: TField = (
             await self.__node.read_value()
         )  # pyright: reportUnknownMemberType=false
-        self.__datapoint.set_from_reader_side(value)
+        self.__field.set_from_reader_side(value)
 
     async def write(self) -> None:
         """Записать значение.
@@ -88,10 +90,12 @@ class Field(Generic[TField]):
         """
         if not self.__node:
             return
-        if self.__datapoint.ts_write <= self.__last_ts_write:
+        if self.__field.access == Access.ro:
+            return
+        if self.__field.ts_write <= self.__last_ts_write:
             return
         variant_type: VariantType | None = None
-        match self.__datapoint.value_write:
+        match self.__field.value_write:
             case bool():
                 variant_type = VariantType.Boolean
             case int():
@@ -102,13 +106,13 @@ class Field(Generic[TField]):
                 variant_type = VariantType.Float
             case _:
                 raise TypeError(
-                    "Unknown type for datapoint: {0}".format(self.__datapoint),
+                    "Unknown type for datapoint: {0}".format(self.__field),
                 )
         try:
             await self.__node.write_value(
                 DataValue(
                     Value=Variant(
-                        Value=self.__datapoint.value_write,
+                        Value=self.__field.value_write,
                         VariantType=variant_type,
                     ),
                 ),
@@ -116,11 +120,11 @@ class Field(Generic[TField]):
         except BadTypeMismatch:  # pyright: ignore
             raise ValueError(
                 MSG_WRONG_TYPE.format(
-                    datapoint=self.__datapoint,
+                    datapoint=self.__field,
                     variant_type=variant_type,
                 ),
             )
-        self.__last_ts_write = self.__datapoint.ts_write
+        self.__last_ts_write = self.__field.ts_write
 
     @property
     def node_id(self) -> str:
