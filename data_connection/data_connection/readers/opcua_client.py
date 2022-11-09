@@ -11,10 +11,10 @@ from asyncua.common.node import Node
 from asyncua.ua import DataValue, Variant, VariantType
 from asyncua.ua.uaerrors import UaStatusCodeError, BadTypeMismatch
 
-from ..datapoint import Datapoint as DatapointComm, TDatapoint
+from ..field import Field as DatapointComm, TField
 
 __all__: list[str] = [
-    "Datapoint",
+    "Field",
     "Reader",
 ]
 
@@ -40,17 +40,17 @@ MSG_WRONG_TYPE: Final[
 requested opc ua type: {variant_type}"""
 
 
-class Datapoint(Generic[TDatapoint]):
+class Field(Generic[TField]):
     """Датапоинт для доступа к OPC UA."""
 
-    __datapoint: DatapointComm[TDatapoint]
+    __datapoint: DatapointComm[TField]
     __node_id: str
     __node: Node | None
     __last_ts_write: dt.datetime
 
     def __init__(
         self,
-        datapoint: DatapointComm[TDatapoint],
+        datapoint: DatapointComm[TField],
         node_id: str,
     ) -> None:
         """Датапоинт для доступа к OPC UA.
@@ -71,7 +71,7 @@ class Datapoint(Generic[TDatapoint]):
         """Прочитать значение."""
         if not self.__node:
             return
-        value: TDatapoint = (
+        value: TField = (
             await self.__node.read_value()
         )  # pyright: reportUnknownMemberType=false
         self.__datapoint.set_from_reader_side(value)
@@ -183,7 +183,7 @@ class Reader(object):
 
     __url: str
     __debug_comm_cycle: bool
-    __datapoints: Iterable[Datapoint[Any]]
+    __datapoints: Iterable[Field[Any]]
     __comm_cycle: float
     ready: bool
 
@@ -192,7 +192,7 @@ class Reader(object):
         url: str,
         session_timeout: int = 30000,
         debug_comm_cycle: bool = False,
-        datapoints: Iterable[Datapoint[Any]] | None = None,
+        datapoints: Iterable[Field[Any]] | None = None,
         comm_cycle: float = 1,
     ) -> None:
         """Подключение к OPC UA серверу.
@@ -203,7 +203,7 @@ class Reader(object):
             Строка подключения к OPC UA серверу
         session_timeout: int
             Таймаут сессии, [с]
-        debug_perf: bool
+        debug_comm_cycle: bool
             True - выводить время цикла
         datapoints: Iterable[DatapointOpcUA[Any]]
             Перечень точек для опроса

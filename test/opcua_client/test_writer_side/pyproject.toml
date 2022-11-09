@@ -17,7 +17,7 @@ python = "^3.11"
 
 debugpy = "*"
 
-data_connection = { path = "../data_connection", develop = true }
+data_connection = { path = "../../../data_connection", develop = true }
 test_reader_side = { path = "../test_reader_side", develop = true }
 
 
@@ -36,3 +36,4 @@ pythonPlatform = "Linux"
 pythonVersion = "3.11"
 stubPath = '.venv/typings'
 typeCheckingMode = "strict"
+reportMissingTypeStubs = false

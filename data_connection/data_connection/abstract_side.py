@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from websockets.exceptions import ConnectionClosed, ConnectionClosedOK
 from websockets.legacy import client
 
-from .datapoint import Datapoint
+from .field import Field
 
 log: logging.Logger = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -22,7 +22,7 @@ log.setLevel(logging.INFO)
 NS_IN_S: Final[float] = 1e9
 URL: Final[str] = "ws://{host}:{port}{endpoint}"
 TBaseModel = TypeVar("TBaseModel", bound=BaseModel)
-TModelField = Datapoint[Any] | dict[str, Any]
+TModelField = Field[Any] | dict[str, Any]
 
 
 def isinstance_iterable(
@@ -206,8 +206,8 @@ class AbstractSide(Generic[TBaseModel]):  # noqa: WPS214
 
     def _field_to_datapoint(
         self,
-        field: Datapoint[Any] | Any,
-    ) -> Datapoint[Any] | None:
-        if not isinstance(field, Datapoint):
+        field: Field[Any] | Any,
+    ) -> Field[Any] | None:
+        if not isinstance(field, Field):
             return None
         return field

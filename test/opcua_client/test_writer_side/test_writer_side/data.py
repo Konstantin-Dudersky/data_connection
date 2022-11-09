@@ -2,7 +2,7 @@
 
 from ipaddress import IPv4Address
 
-from data_connection.writer_side import WriterSide
+from data_connection import WriterSide
 from test_reader_side.schemas import DataModel
 
 

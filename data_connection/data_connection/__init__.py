@@ -1,9 +1,13 @@
 """data_connection package."""
 
-from . import datapoint, reader_side, writer_side
+from .base_model import BaseModel
+from .field import Field
+from .reader_side import ReaderSide
+from .writer_side import WriterSide
 
 __all__: list[str] = [
-    "datapoint",
-    "reader_side",
-    "writer_side",
+    "BaseModel",
+    "Field",
+    "ReaderSide",
+    "WriterSide",
 ]

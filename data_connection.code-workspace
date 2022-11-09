@@ -7,11 +7,13 @@
     {
       "path": "data_connection"
     },
+    // opcua_client
     {
-      "path": "test_reader_side"
+      "path": "test/opcua_client/test_reader_side"
     },
     {
-      "path": "test_writer_side"
+      "path": "test/opcua_client/test_writer_side"
     }
+    // modbus tcp client
   ]
 }

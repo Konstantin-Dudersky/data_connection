@@ -6,7 +6,7 @@ import ipaddress
 from typing import Any
 
 from .abstract_side import AbstractSide, TBaseModel, TModelField
-from .datapoint import Datapoint, DatapointPrepare
+from .field import Field, FieldPrepare
 
 
 class ReaderSide(AbstractSide[TBaseModel]):
@@ -80,11 +80,11 @@ class ReaderSide(AbstractSide[TBaseModel]):
             field_ext: TModelField = dict_ext[field_key]
             # try Datapoint
             if (  # noqa: WPS337
-                isinstance(field_xch, Datapoint)
-                and isinstance(field_int, Datapoint)
-                and isinstance(field_ext, Datapoint)
+                isinstance(field_xch, Field)
+                and isinstance(field_int, Field)
+                and isinstance(field_ext, Field)
             ):
-                DatapointPrepare.send_to_writer_side(
+                FieldPrepare.send_to_writer_side(
                     field_xch=field_xch,
                     field_int=field_int,
                     field_ext=field_ext,
@@ -119,11 +119,11 @@ class ReaderSide(AbstractSide[TBaseModel]):
             field_ext: TModelField = dict_ext[field_key]
             # try Datapoint
             if (  # noqa: WPS337
-                isinstance(field_xch, Datapoint)
-                and isinstance(field_int, Datapoint)
-                and isinstance(field_ext, Datapoint)
+                isinstance(field_xch, Field)
+                and isinstance(field_int, Field)
+                and isinstance(field_ext, Field)
             ):
-                DatapointPrepare.rcv_from_writer_side(
+                FieldPrepare.rcv_from_writer_side(
                     field_xch=field_xch,
                     field_int=field_int,
                     field_ext=field_ext,

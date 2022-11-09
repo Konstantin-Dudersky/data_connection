@@ -60,3 +60,12 @@ poetry install
 ```sh
 poetry build && poetry publish
 ```
+
+
+## Установка
+
+```sh
+
+poetry install --extras "opcua"
+
+```

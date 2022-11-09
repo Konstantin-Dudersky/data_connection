@@ -7,29 +7,24 @@ from pydantic import ValidationError
 from pydantic.error_wrappers import ErrorList
 from pydantic.fields import ModelField
 
-__all__: list[str] = [
-    "Datapoint",
-    "DatapointPrepare",
-    "TDatapoint",
-]
 
-TDatapoint = TypeVar("TDatapoint")
+TField = TypeVar("TField")
 
 
-class Datapoint(Generic[TDatapoint]):  # noqa: WPS214
+class Field(Generic[TField]):  # noqa: WPS214
     """Базовый класс для данных."""
 
-    value_read: TDatapoint
-    value_write: TDatapoint
+    value_read: TField
+    value_write: TField
     ts_read: dt.datetime = dt.datetime.min
     ts_write: dt.datetime = dt.datetime.min
 
-    def __init__(self, default: TDatapoint) -> None:
+    def __init__(self, default: TField) -> None:
         """Базовый класс для данных.
 
         Parameters
         ----------
-        default: TDatapoint
+        default: TField
             Начальное значение
         """
         self.value_read = default
@@ -58,7 +53,7 @@ class Datapoint(Generic[TDatapoint]):  # noqa: WPS214
         yield cls._validate
 
     @property
-    def value(self) -> TDatapoint:
+    def value(self) -> TField:
         """Значение для считываения клиентской программой.
 
         Обновляется метка времени чтения.
@@ -71,14 +66,14 @@ class Datapoint(Generic[TDatapoint]):  # noqa: WPS214
         return self.value_read
 
     @value.setter
-    def value(self, value: TDatapoint) -> None:
+    def value(self, value: TField) -> None:
         """Изменение значения на стороне writer_side.
 
         Обновляется метка времени записи.
 
         Parameters
         ----------
-        value: TDatapoint
+        value: TField
             Новое значение
         """
         self.ts_write = dt.datetime.utcnow()
@@ -87,14 +82,14 @@ class Datapoint(Generic[TDatapoint]):  # noqa: WPS214
 
     def set_from_reader_side(
         self,
-        value: TDatapoint,
+        value: TField,
         ts: dt.datetime | None = None,
     ) -> None:
         """Установить значение со стороны reader_side.
 
         Parameters
         ----------
-        value: TDatapoint
+        value: TField
             Новое значение
         ts: dt.datetime
             Опционально - метка времени. Если отсутсвует, подставляется
@@ -166,15 +161,15 @@ class Datapoint(Generic[TDatapoint]):  # noqa: WPS214
         return value
 
 
-class DatapointPrepare(Generic[TDatapoint]):
+class FieldPrepare(Generic[TField]):
     """Преобразование полей перед отправкой / после получения."""
 
     @classmethod
     def send_to_writer_side(
         cls,
-        field_xch: Datapoint[TDatapoint],
-        field_int: Datapoint[TDatapoint],
-        field_ext: Datapoint[TDatapoint],
+        field_xch: Field[TField],
+        field_int: Field[TField],
+        field_ext: Field[TField],
     ) -> None:
         """Подготовка перед передачей reader_side -> writer_side.
 
@@ -193,9 +188,9 @@ class DatapointPrepare(Generic[TDatapoint]):
     @classmethod
     def send_to_reader_side(
         cls,
-        field_xch: Datapoint[TDatapoint],
-        field_int: Datapoint[TDatapoint],
-        field_ext: Datapoint[TDatapoint],
+        field_xch: Field[TField],
+        field_int: Field[TField],
+        field_ext: Field[TField],
     ) -> None:
         """Подготовка перед передачей writer_side -> reader_side.
 
@@ -214,9 +209,9 @@ class DatapointPrepare(Generic[TDatapoint]):
     @classmethod
     def rcv_from_reader_side(
         cls,
-        field_xch: Datapoint[TDatapoint],
-        field_int: Datapoint[TDatapoint],
-        field_ext: Datapoint[TDatapoint],
+        field_xch: Field[TField],
+        field_int: Field[TField],
+        field_ext: Field[TField],
         delay: dt.timedelta,
     ) -> None:
         """Подготовка после передачи reader_side -> writer_side.
@@ -244,9 +239,9 @@ class DatapointPrepare(Generic[TDatapoint]):
     @classmethod
     def rcv_from_writer_side(
         cls,
-        field_xch: Datapoint[TDatapoint],
-        field_int: Datapoint[TDatapoint],
-        field_ext: Datapoint[TDatapoint],
+        field_xch: Field[TField],
+        field_int: Field[TField],
+        field_ext: Field[TField],
     ) -> None:
         """Подготовка после передачи reader_side -> writer_side.
 
