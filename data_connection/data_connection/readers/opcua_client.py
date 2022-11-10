@@ -41,7 +41,7 @@ requested opc ua type: {variant_type}"""
 
 
 class Field(Generic[TField]):
-    """Датапоинт для доступа к OPC UA."""
+    """Поле для доступа к OPC UA."""
 
     __field: FieldComm[TField]
     __node_id: str
@@ -53,7 +53,7 @@ class Field(Generic[TField]):
         field: FieldComm[TField],
         node_id: str,
     ) -> None:
-        """Датапоинт для доступа к OPC UA.
+        """Поле для доступа к OPC UA.
 
         Parameters
         ----------
@@ -187,7 +187,7 @@ class Reader(object):
 
     __url: str
     __debug_comm_cycle: bool
-    __datapoints: Iterable[Field[Any]]
+    __field: Iterable[Field[Any]]
     __comm_cycle: float
     ready: bool
 
@@ -196,7 +196,7 @@ class Reader(object):
         url: str,
         session_timeout: int = 30000,
         debug_comm_cycle: bool = False,
-        datapoints: Iterable[Field[Any]] | None = None,
+        fields: Iterable[Field[Any]] | None = None,
         comm_cycle: float = 1,
     ) -> None:
         """Подключение к OPC UA серверу.
@@ -209,7 +209,7 @@ class Reader(object):
             Таймаут сессии, [с]
         debug_comm_cycle: bool
             True - выводить время цикла
-        datapoints: Iterable[DatapointOpcUA[Any]]
+        fields: Iterable[Field[Any]]
             Перечень точек для опроса
         comm_cycle: float
             Период обмена данными с устройством, [c]
@@ -219,7 +219,7 @@ class Reader(object):
         ValueError
             - пустой перечень точек
         """
-        if not datapoints:
+        if not fields:
             raise ValueError("OPC UA datapoint list empty")
         self.__url = url
         self.__debug_comm_cycle = debug_comm_cycle
@@ -227,8 +227,8 @@ class Reader(object):
         self.__client.session_timeout = (  # pyright: ignore
             session_timeout * 1000
         )
-        self.__datapoints = datapoints
-        for datapoint in self.__datapoints:
+        self.__field = fields
+        for datapoint in self.__field:
             node: Node = self.__client.get_node(datapoint.node_id)
             datapoint.node(node=node)
         self.ready = True
@@ -251,9 +251,9 @@ class Reader(object):
     async def __task_read_write(self) -> None:
         """Чтение / запись данных."""
         log.debug("Start comm cycle")
-        for dp_write in self.__datapoints:
+        for dp_write in self.__field:
             await dp_write.write()
-        for dp_read in self.__datapoints:
+        for dp_read in self.__field:
             await dp_read.read()
         self.ready = True
         log.debug("End comm cycle")

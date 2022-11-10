@@ -2,7 +2,7 @@ import asyncio
 import logging
 
 from .api import server_task
-from .data import reader_side, opcua
+from .data import opcua, reader_side
 from .logger import logger_init
 
 logger_init("test_reader_side")
@@ -11,24 +11,15 @@ log: logging.Logger = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 
-async def counter() -> None:
-    counter: int = 0
-    while True:
-        counter += 1
-        reader_side.data.test_float.set_from_reader_side(counter)
-        await asyncio.sleep(2)
-
-
 def main() -> None:
     """Entry point."""
 
     async def _main() -> None:
         done, _ = await asyncio.wait(
             [
-                asyncio.create_task(server_task(8010)),
+                asyncio.create_task(server_task(8000)),
                 asyncio.create_task(reader_side.task()),
                 asyncio.create_task(opcua.task()),
-                asyncio.create_task(counter()),
             ],
             return_when=asyncio.FIRST_COMPLETED,
         )

@@ -1,0 +1,37 @@
+version: '3.8'
+
+name: data_connection
+
+services:
+
+  opcua_client_reader_side:
+    image: target:5000/data_connection/opcua_client_reader_side
+    container_name: opcua_client_reader_side
+    hostname: opcua_client_reader_side
+    environment:
+      - READER_SIDE_HOST=10.101.80.100
+      - READER_SIDE_PORT=8010
+      - WRITER_SIDE_HOST=10.101.80.100
+      - WRITER_SIDE_PORT=8011
+    ports:
+      - "8010:8000"
+    profiles:
+      - opcua_client
+    volumes:
+      - .:/root/code
+
+  opcua_client_writer_side:
+    image: target:5000/data_connection/opcua_client_writer_side
+    container_name: opcua_client_writer_side
+    hostname: opcua_client_writer_side
+    environment:
+      - READER_SIDE_HOST=10.101.80.100
+      - READER_SIDE_PORT=8010
+      - WRITER_SIDE_HOST=10.101.80.100
+      - WRITER_SIDE_PORT=8011
+    ports:
+      - "8011:8000"
+    profiles:
+      - opcua_client
+    volumes:
+      - .:/root/code

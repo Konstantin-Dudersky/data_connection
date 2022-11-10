@@ -1,16 +1,22 @@
 Чтение данных с контроллера S7-1200 по OPC UA.
 
-Запуск:
-- ==reader_side==
+Сборка:
 
 ```sh
-poetry run start
+docker buildx bake --builder builder -f docker-bake.hcl --push opcua_client
 ```
 
-- ==writer_side==
+Запуск:
 
 ```sh
-poetry run start
+docker compose --profile opcua_client pull \
+	&& docker compose --profile opcua_client up -d
+```
+
+Останов:
+
+```sh
+docker compose --profile opcua_client down
 ```
 
 API:

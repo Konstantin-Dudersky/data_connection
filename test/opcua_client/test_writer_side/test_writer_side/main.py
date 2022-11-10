@@ -26,7 +26,7 @@ def main() -> None:
     async def _main() -> None:
         done, _ = await asyncio.wait(
             [
-                asyncio.create_task(server_task(8011)),
+                asyncio.create_task(server_task(8000)),
                 asyncio.create_task(writer_side.task()),
                 asyncio.create_task(test()),
             ],
