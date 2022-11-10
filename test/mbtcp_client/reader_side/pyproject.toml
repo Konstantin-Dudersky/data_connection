@@ -1,0 +1,31 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+name = "reader-side"
+version = "0.0.1"
+description = ""
+authors = ["konstantin-dudersky <konstantin.dudersky@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "reader_side" }]
+
+
+[tool.poetry.dependencies]
+python = "3.11"
+
+debugpy = "*"
+
+data_connection = { path = "../../../data_connection", develop = true, extras = [
+    'modbus',
+] }
+
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+wemake-python-styleguide = "0.17.0"
+
+
+[tool.poetry.scripts]
+start = 'reader_side.main:main'

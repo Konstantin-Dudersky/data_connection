@@ -13,7 +13,13 @@
     },
     {
       "path": "test/opcua_client/test_writer_side"
-    }
+    },
     // modbus tcp client
+    {
+      "path": "test/mbtcp_client/reader_side"
+    },
+    {
+      "path": "test/mbtcp_client/writer_side"
+    }
   ]
 }

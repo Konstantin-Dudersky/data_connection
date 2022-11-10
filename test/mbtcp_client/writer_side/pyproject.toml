@@ -1,0 +1,27 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+name = "writer-side"
+version = "0.0.1"
+description = ""
+authors = ["Konstantin-Dudersky <Konstantin.Dudersky@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "writer_side" }]
+
+
+[tool.poetry.dependencies]
+python = "3.11"
+
+data_connection = { path = "../../../data_connection", develop = true }
+
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+wemake-python-styleguide = "0.17.0"
+
+
+[tool.poetry.scripts]
+start = 'writer_side.main:main'

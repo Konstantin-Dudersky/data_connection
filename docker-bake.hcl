@@ -1,7 +1,5 @@
 /*
 Запустить сборку и загрузку образов:
-
-docker buildx bake --builder builder -f docker-bake.hcl --push kleck
 */
 
 variable "PYTHON_VER" { default = "3.11.0" }
@@ -44,5 +42,33 @@ group "opcua_client" {
     targets = [
         "opcua_client_reader_side",
         "opcua_client_writer_side",
+    ]
+}
+
+
+target "mbtcp_client_reader_side" {
+    contexts = {
+        base = "target:data_connection_base",
+    }
+    dockerfile = "./test/mbtcp_client/reader_side/Dockerfile"
+    tags = [ "target:5000/data_connection/mbtcp_client_reader_side" ]
+    platforms = [
+        "linux/amd64",
+    ]
+}
+target "mbtcp_client_writer_side" {
+    contexts = {
+        base = "target:data_connection_base",
+    }
+    dockerfile = "./test/mbtcp_client/writer_side/Dockerfile"
+    tags = [ "target:5000/data_connection/mbtcp_client_writer_side" ]
+    platforms = [
+        "linux/amd64",
+    ]
+}
+group "mbtcp_client" {
+    targets = [
+        "mbtcp_client_reader_side",
+        "mbtcp_client_writer_side",
     ]
 }
