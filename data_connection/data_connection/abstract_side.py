@@ -165,6 +165,7 @@ class AbstractSide(Generic[TBaseModel]):  # noqa: WPS214
     async def _ws_client(self) -> None:
 
         """Получение данных через WebSocket."""
+
         url: str = URL.format(
             host=self.__other_host,
             port=self.__other_port,
