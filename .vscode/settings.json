@@ -10,8 +10,6 @@
       "when": "$(basename).py"
     },
     "**/__pycache__": true,
-    "data_connection": true,
-    "test": true,
     ".obsidian": true
   },
   "python.linting.flake8Enabled": true,
