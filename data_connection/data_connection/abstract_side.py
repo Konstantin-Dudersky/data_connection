@@ -163,9 +163,7 @@ class AbstractSide(Generic[TBaseModel]):  # noqa: WPS214
             await asyncio.sleep(self.__send_interval - (end - begin) / NS_IN_S)
 
     async def _ws_client(self) -> None:
-
         """Получение данных через WebSocket."""
-
         url: str = URL.format(
             host=self.__other_host,
             port=self.__other_port,

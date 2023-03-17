@@ -13,11 +13,11 @@ description = "Передача данных между сервисами"
 name = "data-connection"
 readme = "README.md"
 repository = "https://github.com/Konstantin-Dudersky/data_exchange.git"
-version = "0.0.3"
+version = "0.0.4"
 
 
 [tool.poetry.dependencies]
-python = "3.11"
+python = "3.11.*"
 
 asyncua = { version = "1.*", optional = true }
 fastapi = "0.*"
@@ -30,6 +30,7 @@ websockets = "10.*"
 black = "*"
 wemake-python-styleguide = "0.17.0"
 poethepoet = "*"
+pytest = "*"
 
 
 [tool.poetry.extras]
@@ -49,3 +50,9 @@ pythonVersion = "3.11"
 reportUnnecessaryTypeIgnoreComment = true
 stubPath = '.venv/typings'
 typeCheckingMode = "strict"
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+log_format = "%(levelname)s: %(asctime)s.%(msecs)03d | %(name)s:%(lineno)d - %(funcName)s\n-> %(message)s"
+log_date_format = "%H:%M:%S"
